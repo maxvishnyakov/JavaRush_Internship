@@ -15,7 +15,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 public class PlayerController {
@@ -132,11 +135,26 @@ public class PlayerController {
     }
 
     @PostMapping("/rest/players")
-    public Player getPlayer(@RequestBody Player player){
+    public Player createPlayer(@RequestBody Player player){
         if(playerService.isNewObjectValid(player) == true) {
             playerService.createPlayer(player);
             return player;
         }
         else throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+    }
+
+    @GetMapping("/rest/players/{id}")
+    public Player getPlayer(@PathVariable(name = "id") Long id) {
+        if(id % 1 != 0 || id <= 0 || id == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
+        Player player = playerService.getPlayer(id);
+        if(player != null) {
+            return player;
+        }
+        else {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+
     }
 }
