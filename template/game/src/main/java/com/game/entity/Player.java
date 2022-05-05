@@ -40,6 +40,45 @@ public class Player {
     @Column(name="banned")
     private Boolean banned;
 
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Player player = (Player) o;
+
+        if (id != player.id) return false;
+        if (name != null ? !name.equals(player.name) : player.name != null) return false;
+        if (title != null ? !title.equals(player.title) : player.title != null) return false;
+        if (race != null ? !race.equals(player.race) : player.race != null) return false;
+        if (profession != null ? !profession.equals(player.profession) : player.profession != null) return false;
+        if (birthday != null ? !birthday.equals(player.birthday) : player.birthday != null) return false;
+        if (banned != null ? !banned.equals(player.banned) : player.banned != null) return false;
+        if (experience != null ? !experience.equals(player.experience) : player.experience != null) return false;
+        if (level != null ? !level.equals(player.level) : player.level != null) return false;
+        if (untilNextLevel != null ? !untilNextLevel.equals(player.untilNextLevel) : player.untilNextLevel != null)
+            return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = (int) (id ^ (id >>> 32));
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        result = 31 * result + (title != null ? title.hashCode() : 0);
+        result = 31 * result + (race != null ? race.hashCode() : 0);
+        result = 31 * result + (profession != null ? profession.hashCode() : 0);
+        result = 31 * result + (birthday != null ? birthday.hashCode() : 0);
+        result = 31 * result + (banned != null ? banned.hashCode() : 0);
+        result = 31 * result + (experience != null ? experience.hashCode() : 0);
+        result = 31 * result + (level != null ? level.hashCode() : 0);
+        result = 31 * result + (untilNextLevel != null ? untilNextLevel.hashCode() : 0);
+        return result;
+    }
+
+
     public Player(Long id, String name, String title, Race race, Profession profession, Integer experience,
                   Integer level, Integer untilNextLevel, Date birthday, Boolean banned) {
         this.id = id;
