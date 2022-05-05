@@ -6,13 +6,14 @@ import com.game.entity.Race;
 import com.game.repository.specifications.PlayerSpecs;
 import com.game.service.PlayerService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -26,7 +27,7 @@ public class PlayerController {
         this.playerService = playerService;
     }
 
-    @GetMapping(value ="/rest/players")
+    @GetMapping(value = "/rest/players")
     public List<Player> showPlayers(@RequestParam(value = "name", required = false) String name,
                                     @RequestParam(value = "title", required = false) String title,
                                     @RequestParam(value = "race", required = false) Race race,
@@ -128,5 +129,14 @@ public class PlayerController {
         }
         Integer  resultCount = playerService.countAll(spec);
         return resultCount;
+    }
+
+    @PostMapping("/rest/players")
+    public Player getPlayer(@RequestBody Player player){
+        if(playerService.isNewObjectValid(player) == true) {
+            playerService.createPlayer(player);
+            return player;
+        }
+        else throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
     }
 }

@@ -7,39 +7,47 @@ import java.util.Date;
 @Table(name = "player")
 public class Player {
     @Id
-    @GeneratedValue
-    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column(name="name")
+    @Column(name="name", nullable = false, length = 12)
     private String name;
 
-    @Column(name="title")
+    @Column(name="title", nullable = false, length = 30)
     private String title;
 
     @Enumerated(EnumType.STRING)
-    @Column(name="race")
+    @Column(name="race", nullable = false)
     private Race race;
 
     @Enumerated(EnumType.STRING)
-    @Column(name="profession")
+    @Column(name="profession", nullable = false)
     private Profession profession;
 
-    @Column(name="experience")
+    @Column(name="experience", nullable = false)
     private Integer experience;
 
-    @Column(name="level")
+    @Column(name="level", nullable = false)
     private Integer level;
 
-    @Column(name="untilNextLevel")
+    @Column(name="untilNextLevel", nullable = false)
     private Integer untilNextLevel;
 
-    @Column(name="birthday")
+    @Column(name="birthday", nullable = false)
     private Date birthday;
 
-    @Column(name="banned")
+    @Column(name="banned", nullable = false)
     private Boolean banned;
 
+
+
+    public void setLevelAndUntilNext(Integer experience) {
+        Integer currentLevel = ((int)Math.sqrt(2500+200*experience) - 50)/100;
+        Integer expUntil = 50*(currentLevel+1)*(currentLevel+2)- experience;
+        this.level = currentLevel;
+        this.untilNextLevel = expUntil;
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -79,7 +87,7 @@ public class Player {
     }
 
 
-    public Player(Long id, String name, String title, Race race, Profession profession, Integer experience,
+    public Player(Long id,String name, String title, Race race, Profession profession, Integer experience,
                   Integer level, Integer untilNextLevel, Date birthday, Boolean banned) {
         this.id = id;
         this.name = name;
