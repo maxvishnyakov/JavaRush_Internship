@@ -40,7 +40,37 @@ public class Player {
     @Column(name="banned", nullable = false)
     private Boolean banned;
 
+    public boolean areAllFieldsFilled() {
+        if (this.name == null
+                || this.title == null
+                || this.race == null
+                || this.profession == null
+                || this.birthday == null
+                || this.experience == null) return false;
+        return true;
+    }
 
+    public void ignoringUnnecessaryData() {
+        this.id = null;
+        this.untilNextLevel = null;
+        this.level = null;
+    }
+
+    public void updatingWith(Player updatedFields) {
+        updatedFields.id = null;
+        updatedFields.level = null;
+        updatedFields.untilNextLevel = null;
+        if (updatedFields.name != null) this.name = updatedFields.name;
+        if (updatedFields.title != null) this.title = updatedFields.title;
+        if (updatedFields.race != null) this.race = updatedFields.race;
+        if (updatedFields.profession != null) this.profession = updatedFields.profession;
+        if (updatedFields.birthday != null) this.birthday = updatedFields.birthday;
+        if (updatedFields.banned != null) this.banned = updatedFields.banned;
+        if (updatedFields.experience != null) {
+            this.experience = updatedFields.experience;
+            setLevelAndUntilNext(this.experience);
+        }
+    }
 
     public void setLevelAndUntilNext(Integer experience) {
         Integer currentLevel = ((int)Math.sqrt(2500+200*experience) - 50)/100;

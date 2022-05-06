@@ -8,7 +8,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.criteria.CriteriaBuilder;
 import java.util.Optional;
 
 @Service
@@ -44,13 +43,21 @@ public class PlayerService {
         }
     }
 
+    public void updatePlayer(Player player) {
+        playerRepository.save(player);
+    }
+
+
     public void createPlayer(Player player) {
         player.setLevelAndUntilNext(player.getExperience());
         playerRepository.save(player);
     }
 
-    public Player getPlayer(Long id) {
+    public Optional<Player> getPlayer(Long id) {
         Optional<Player> player = playerRepository.findById(id);
-        return player.get();
+        return player;
+    }
+    public void deletePlayer(Long id) {
+        playerRepository.deleteById(id);
     }
 }

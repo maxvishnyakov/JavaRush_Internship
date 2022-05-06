@@ -25,6 +25,10 @@ public class PlayerController {
     private PlayerService playerService;
     private Specification<Player> spec;
 
+    private Integer PAGE_NUMBER = 0;
+
+    private Integer PAGE_SIZE = 3;
+
     @Autowired
     public void setPlayerService(PlayerService playerService) {
         this.playerService = playerService;
@@ -78,6 +82,15 @@ public class PlayerController {
         }
         if(maxLevel != null) {
             spec = spec.and(PlayerSpecs.findLessOrEqualLevel(maxLevel));
+        }
+        if(pageNumber == null) {
+            pageNumber = this.PAGE_NUMBER;
+        }
+        if(pageSize == null) {
+            pageSize = this.PAGE_SIZE;
+        }
+        if(order == null) {
+            order = PlayerOrder.ID;
         }
         Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(order.getFieldName()));
         List<Player> resultList = playerService.getPlayersWithSpecs(spec, pageable).getContent();
@@ -136,7 +149,11 @@ public class PlayerController {
 
     @PostMapping("/rest/players")
     public Player createPlayer(@RequestBody Player player){
+        if(!player.areAllFieldsFilled()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
         if(playerService.isNewObjectValid(player) == true) {
+            player.ignoringUnnecessaryData();
             playerService.createPlayer(player);
             return player;
         }
@@ -148,13 +165,38 @@ public class PlayerController {
         if(id % 1 != 0 || id <= 0 || id == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
-        Player player = playerService.getPlayer(id);
-        if(player != null) {
-            return player;
+        Optional <Player> player = playerService.getPlayer(id);
+        if(player.isPresent()) {
+            return player.get();
         }
         else {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
+    }
 
+    @PostMapping(value = "/rest/players/{id}")
+    public Player updatePlayer(@PathVariable(name = "id") Long id, @RequestBody Player updatedPlayer) {
+        Player player = getPlayer(id);
+        player.updatingWith(updatedPlayer);
+        if (playerService.isNewObjectValid(player) == true && player.areAllFieldsFilled())  {
+            playerService.updatePlayer(player);
+            return player;
+        }
+        else throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+
+    }
+
+    @DeleteMapping(value = "/rest/players/{id}")
+    public void deletePlayer(@PathVariable(name = "id") Long id) {
+        if(id % 1 != 0 || id <= 0 || id == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
+        Player player = getPlayer(id);
+        if(player != null) {
+            playerService.deletePlayer(id);
+        }
+        else {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
     }
 }
